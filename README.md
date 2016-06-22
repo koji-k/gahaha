@@ -21,6 +21,7 @@ class Person {
 
 Gahaha.gahanize(Person)
 Person a = new Person(name:"Gahaha!", age:31).save()
+assert a.id == 1
 assert a.name == "Gahaha!"
 assert a.age == 31
 ```
