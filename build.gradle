@@ -1,0 +1,22 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+
+mainClassName = ''
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.7'
+    compile group: 'com.h2database', name: 'h2', version: '1.4.192'
+    compile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
+}
+
+jar.baseName = 'gahaha'
+jar.version = '0.1'
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
