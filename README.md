@@ -11,7 +11,7 @@ e.x.) `groovy -cp gahaha-0.1.jar:. test.groovy`
 
 `test.groovy` is like following.
 
-```
+```groovy
 import gahaha.*
 
 class Person {
@@ -24,4 +24,10 @@ Person a = new Person(name:"Gahaha!", age:31).save()
 assert a.id == 1
 assert a.name == "Gahaha!"
 assert a.age == 31
+
+new Person(name:"TEST").save()
+assert Person.count() == 2
+Person.list().each { Person person ->
+    println "Hello ${person.name}(${person.age})!"
+}
 ```

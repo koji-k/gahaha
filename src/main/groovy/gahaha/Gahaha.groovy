@@ -58,8 +58,8 @@ class Gahaha {
 
     private addUtilMethods() {
 
-        this.clazz.metaClass.static.list = {->
-            connection.rows("SELECT * FROM ${tableName}".toString()).collect{GroovyRowResult row ->
+        this.clazz.metaClass.static.list = { Map otherExpressions = [:] ->
+            connection.rows("SELECT * FROM ${tableName} ${getOrderBy(otherExpressions)}".toString()).collect{GroovyRowResult row ->
                 convertToClazz(row)
             }
         }
@@ -92,5 +92,26 @@ class Gahaha {
             Long id = delegate.id
             connection.execute("DELETE FROM ${tableName} WHERE id = ?", [id])
         }
+
+        this.clazz.metaClass.static.findAllWhere = {Map conditions, Map otherExpressions = [:] ->
+            List<String> columns = conditions.keySet()*.toString()
+            String conditionsWhere = columns.collect {"${it} = ?"}.join(" AND ")
+            List<Object> conditionValues = columns.collect{conditions[it]}
+
+            connection.rows("SELECT * FROM ${tableName} WHERE ${conditionsWhere} ${getOrderBy(otherExpressions)}", conditionValues).collect{GroovyRowResult row ->
+                convertToClazz(row)
+            }
+        }
+
+        this.clazz.metaClass.static.findWhere = {Map conditions, Map otherExpressions = [:] ->
+            def results = findAllWhere(conditions, otherExpressions)
+            results ? results.head() : null
+        }
+    }
+
+    private getOrderBy(Map expressions) {
+        String sortKey = expressions['sort'] ?: 'id'
+        String sortType = expressions['order'] ?: 'asc'
+        " ORDER BY ${sortKey} ${sortType} "
     }
 }
